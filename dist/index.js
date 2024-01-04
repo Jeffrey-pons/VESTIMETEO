@@ -4,6 +4,9 @@ import MongoDb from "./src/config/db.js";
 import dotenv from "dotenv";
 import rateLimitMiddleware from "./src/middlewares/rate.limiter.js";
 import initRoutes from "./src/routes/routes.js";
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from "./src/config/swagger.js";
+import initMiddlewares from "./src/middlewares/init.middleware.js";
 dotenv.config();
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -14,7 +17,9 @@ app.use(rateLimitMiddleware);
 //Mongo DB
 await MongoDb();
 // //middlewares
-// initMiddlewares(app);
+initMiddlewares(app);
 //routes
 initRoutes(app);
+// Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
