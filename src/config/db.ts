@@ -19,4 +19,3 @@ const MongoDb = async () => {
 };
 
 export default MongoDb;
-

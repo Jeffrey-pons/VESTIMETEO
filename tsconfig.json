@@ -9,6 +9,6 @@
     "skipLibCheck": false,
     
   },
-  "include": ["*.ts"],
+  "include": ["*.ts", "migrate-mongo-config.js"],
   "exclude": ["node_modules"]
 }

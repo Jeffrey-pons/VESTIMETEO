@@ -6,6 +6,42 @@ import { jwtSign } from '../middlewares/jwt.middlewares.js';
 import User from "../models/user.model.js";
 import isPasswordValid from "../utils/password.utils.js";
 import isEmailValid from "../utils/mail.utils.js";
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Operations related to user management
+ */
+/**
+ * @swagger
+ * /users/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       description: User registration data
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               lastname:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       '201':
+ *         description: Compte créé avec succès.
+ *       '400':
+ *         description: Vos informations sont incorrectes.
+ *       '401':
+ *         description: Vos informations sont incomplètes.
+ */
 // Inscription
 const register = async (req, res) => {
     const { name, lastname, email, password } = req.body;
@@ -34,6 +70,30 @@ const register = async (req, res) => {
         token: token,
     });
 };
+/**
+* @swagger
+* /users/login:
+*   post:
+*     summary: Log in a user
+*     tags: [Users]
+*     requestBody:
+*       description: User login data
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               email:
+*                 type: string
+*               password:
+*                 type: string
+*     responses:
+*       '201':
+*         description: Connexion réussie.
+*       '400':
+*         description: Échec de l'authentification. Veuillez vérifier votre adresse e-mail et votre mot de passe.
+*/
 // Connexion
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -50,21 +110,63 @@ const login = async (req, res) => {
         .status(201)
         .json({ message: "Connexion réussie", user: userInfos(user), token: token });
 };
+/**
+ * @swagger
+ * /users/token:
+ *   get:
+ *     summary: Verify user by token
+ *     tags: [Users]
+ *     requestBody:
+ *       description: User token data
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
+ *       '202':
+ *         description: Vérification du jeton réussie.
+ *       '401':
+ *         description: Erreur lors de la vérification du jeton réussie.
+ */
 // Verification Token
 const getUserbyToken = async (req, res) => {
     const token = req.body.token;
     const { user, error } = await userDaos.findByToken(token);
     if (user) {
-        res.status(202).json({});
+        res.status(202).json({ message: "Vérification du jeton réussie" });
     }
     else {
-        res.status(401).json({});
+        res.status(401).json({ message: "Erreur lors de la vérification du jeton réussie" });
     }
 };
+/**
+ * @swagger
+ * /users/{userId}:
+ *   delete:
+ *     summary: Delete a user account
+ *     tags: [Users]
+ *     security:
+ *       - apiKey: []
+ *     responses:
+ *       '200':
+ *         description: Compte utilisateur supprimé avec succès.
+ *       '401':
+ *         description: Erreur lors de la suppression du compte utilisateur.
+ *       '404':
+ *         description: Utilisateur introuvable.
+ *       '500':
+ *         description: Erreur technique sur notre serveur. Veuillez réessayer plus tard.
+ */
 // Suppression compte
 export const deleteUser = async (req, res) => {
     try {
-        const userId = req.body.userId;
+        const userId = req.params.id;
+        console.log(req.params);
+        console.log(userId);
         await User.findByIdAndDelete(userId);
         res.clearCookie("token");
         res
