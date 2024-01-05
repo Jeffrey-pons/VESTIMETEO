@@ -1,5 +1,4 @@
 import swaggerJSDoc from 'swagger-jsdoc';
-// Définition Swagger pour l'API VestiMeteo
 const swaggerDefinition = {
     openapi: '3.0.0',
     info: {
@@ -30,12 +29,6 @@ const swaggerDefinition = {
             description: 'Enter your bearer token in the format Bearer <token>'
         }
     },
-    tags: [
-        {
-            name: 'weather',
-            description: 'Operations related to weather data'
-        },
-    ],
     // swagger : schemes 
 };
 const options = {

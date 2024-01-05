@@ -36,11 +36,11 @@ import isEmailValid from "../utils/mail.utils.js";
  *                 type: string
  *     responses:
  *       '201':
- *         description: Compte créé avec succès
+ *         description: Compte créé avec succès.
  *       '400':
- *         description: Erreur lors de l'inscription
+ *         description: Vos informations sont incorrectes.
  *       '401':
- *         description: Erreur lors de l'inscription
+ *         description: Vos informations sont incomplètes.
  */
 // Inscription
 const register = async (req, res) => {
@@ -90,7 +90,7 @@ const register = async (req, res) => {
 *                 type: string
 *     responses:
 *       '201':
-*         description: Connexion réussie
+*         description: Connexion réussie.
 *       '400':
 *         description: Échec de l'authentification. Veuillez vérifier votre adresse e-mail et votre mot de passe.
 */
@@ -128,9 +128,9 @@ const login = async (req, res) => {
  *                 type: string
  *     responses:
  *       '202':
- *         description: Vérification du jeton réussie
+ *         description: Vérification du jeton réussie.
  *       '401':
- *         description: Erreur lors de la vérification du jeton réussie
+ *         description: Erreur lors de la vérification du jeton réussie.
  */
 // Verification Token
 const getUserbyToken = async (req, res) => {
@@ -153,11 +153,13 @@ const getUserbyToken = async (req, res) => {
  *       - apiKey: []
  *     responses:
  *       '200':
- *         description: Compte utilisateur supprimé avec succès
+ *         description: Compte utilisateur supprimé avec succès.
  *       '401':
- *         description: Erreur lors de la suppression du compte utilisateur
+ *         description: Erreur lors de la suppression du compte utilisateur.
+ *       '404':
+ *         description: Utilisateur introuvable.
  *       '500':
- *         description: Erreur lors de la suppression du compte utilisateur
+ *         description: Erreur technique sur notre serveur. Veuillez réessayer plus tard.
  */
 // Suppression compte
 export const deleteUser = async (req, res) => {

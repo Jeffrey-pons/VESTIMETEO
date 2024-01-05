@@ -39,11 +39,11 @@ import isEmailValid from "../utils/mail.utils.js";
  *                 type: string
  *     responses:
  *       '201':
- *         description: Compte créé avec succès
+ *         description: Compte créé avec succès.
  *       '400':
- *         description: Erreur lors de l'inscription
+ *         description: Vos informations sont incorrectes.
  *       '401':
- *         description: Erreur lors de l'inscription
+ *         description: Vos informations sont incomplètes.
  */
 
 // Inscription
@@ -112,7 +112,7 @@ const register = async (req: any, res: any) => {
  *                 type: string
  *     responses:
  *       '201':
- *         description: Connexion réussie
+ *         description: Connexion réussie.
  *       '400':
  *         description: Échec de l'authentification. Veuillez vérifier votre adresse e-mail et votre mot de passe.
  */
@@ -156,9 +156,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
  *                 type: string
  *     responses:
  *       '202':
- *         description: Vérification du jeton réussie
+ *         description: Vérification du jeton réussie.
  *       '401':
- *         description: Erreur lors de la vérification du jeton réussie
+ *         description: Erreur lors de la vérification du jeton réussie.
  */
 
 // Verification Token
@@ -183,11 +183,13 @@ const getUserbyToken = async (req: Request, res: Response): Promise<void> => {
  *       - apiKey: []
  *     responses:
  *       '200':
- *         description: Compte utilisateur supprimé avec succès
+ *         description: Compte utilisateur supprimé avec succès.
  *       '401':
- *         description: Erreur lors de la suppression du compte utilisateur
+ *         description: Erreur lors de la suppression du compte utilisateur.
+ *       '404':
+ *         description: Utilisateur introuvable.
  *       '500':
- *         description: Erreur lors de la suppression du compte utilisateur
+ *         description: Erreur technique sur notre serveur. Veuillez réessayer plus tard.
  */
 
 

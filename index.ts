@@ -4,9 +4,9 @@ import MongoDb from "./src/config/db.js";
 import dotenv from "dotenv";
 import rateLimitMiddleware from "./src/middlewares/rate.limiter.js"
 import initRoutes from "./src/routes/routes.js"
+import initMiddlewares from "./src/middlewares/init.middleware.js"
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./src/config/swagger.js"
-import initMiddlewares from "./src/middlewares/init.middleware.js"
 
 dotenv.config();
 
