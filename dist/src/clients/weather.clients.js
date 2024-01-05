@@ -1,4 +1,4 @@
-import { getTemperatureAdvice, getWeatherConditionAdvice } from "./weather.conditions.utils.js";
+import { getTemperatureAdvice, getWeatherConditionAdvice } from "../services/weather.conditions.service.js";
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -16,13 +16,13 @@ export const getWeatherData = async (city) => {
         return undefined;
     }
 };
-// Conseil Vestimentairs VF
 export const getWeatherAdvice = async (city) => {
     const weatherData = await getWeatherData(city);
     if (!weatherData) {
         console.error('Aucune donnée météorologique disponible.');
         return { error: 'Aucune donnée météorologique disponible.' };
     }
+    // class constructor
     const temperature = weatherData.main.temp;
     const temperatureMin = weatherData.main.temp_min;
     const temperatureMax = weatherData.main.temp_max;
@@ -32,8 +32,10 @@ export const getWeatherAdvice = async (city) => {
     const windDeg = weatherData.wind.deg;
     const weatherCondition = weatherData.weather[0].main;
     const weatherConditionDescription = weatherData.weather[0].description;
+    // appel des deux methodes dans le service 
     const temperatureAdvice = getTemperatureAdvice(temperature);
     const weatherConditionAdvice = getWeatherConditionAdvice(weatherCondition);
+    //class
     const response = {
         temperature: `Température à ${city}: ${temperature} °C`,
         temperatureMin: `${temperatureMin} °C`,
