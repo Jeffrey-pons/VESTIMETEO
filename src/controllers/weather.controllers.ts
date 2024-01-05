@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getWeatherData } from '../utils/weather.utils.js';
+import { getWeatherData, getWeatherAdvice } from '../clients/weather.clients.js';
 
 
 /**
@@ -24,15 +24,25 @@ import { getWeatherData } from '../utils/weather.utils.js';
  *           type: string
  *     responses:
  *       '200':
- *         description: Successful response with weather data
+ *         description: Donnée de l'api Open Weather bien récuperé.
  *       '500':
- *         description: Internal Server Error
+ *         description: Erreur interne du serveur, veuillez réessayer plus
  */
 
 export const weatherController = {
   getWeatherData: async (req: Request, res: Response): Promise<void> => {
     const cityName = req.params.city as string;
-    const weatherData = await getWeatherData(cityName);
-    res.json(weatherData);
+    try {
+      const weatherAdvice = await getWeatherAdvice(cityName);
+
+      if (weatherAdvice) {
+        res.json(weatherAdvice);
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
 };
