@@ -28,7 +28,6 @@ const { Schema, model } = mongoose;
  *         - lastname
  *         - email
  *         - password
- * 
  */
 
 const UserSchema = new Schema({
