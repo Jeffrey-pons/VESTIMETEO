@@ -7,6 +7,10 @@ import initRoutes from "./src/routes/routes.js"
 import initMiddlewares from "./src/middlewares/init.middleware.js"
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./src/config/swagger.js"
+import { collectDefaultMetrics, register } from 'prom-client';
+import { metricsMiddleware } from "./src/services/metrics.services.js"
+
+collectDefaultMetrics();
 
 dotenv.config();
 
@@ -18,6 +22,7 @@ app.use(express.json({ limit: "500mb" }));
 app.use(cors());
 app.use(express.json());
 app.use(rateLimitMiddleware);
+app.get('/metrics', metricsMiddleware);
 
 //Mongo DB
 await MongoDb();
