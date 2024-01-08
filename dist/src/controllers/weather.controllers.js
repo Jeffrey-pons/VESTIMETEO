@@ -1,5 +1,4 @@
 import { getWeatherAdvice } from '../clients/weather.clients.js';
-import { incrementCityWeatherRequests, } from "../services/metrics.services.js";
 /**
  * @swagger
  * tags:

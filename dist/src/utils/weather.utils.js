@@ -1,21 +1,56 @@
+import { getTemperatureAdvice, getWeatherConditionAdvice } from "./weather.conditions.utils.js";
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 dotenv.config();
+// Récupération donnée API open weather
 export const getWeatherData = async (city) => {
     const apiKey = process.env.OPENWEATHER_API_KEY;
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
     try {
-        const response = await fetch(url);
-        const data = await response.json();
-        return data;
+        const response = await fetch(apiUrl);
+        const weatherData = await response.json();
+        return weatherData;
     }
     catch (error) {
         console.error(error);
+        return undefined;
     }
 };
+// Conseil Vestimentairs VF
 export const getWeatherAdvice = async (city) => {
     const weatherData = await getWeatherData(city);
-    // Ici, vous définirez la logique pour traduire les données météo en conseils vestimentaires
-    const advice = "Conseils vestimentaires en fonction de la météo";
-    return { weatherData, advice };
+    if (!weatherData) {
+        console.error('Aucune donnée météorologique disponible.');
+        return { error: 'Aucune donnée météorologique disponible.' };
+    }
+    const temperature = weatherData.main.temp;
+    const temperatureMin = weatherData.main.temp_min;
+    const temperatureMax = weatherData.main.temp_max;
+    const feelsLike = weatherData.main.feels_like;
+    const humidity = weatherData.main.humidity;
+    const windSpeed = weatherData.wind.speed;
+    const windDeg = weatherData.wind.deg;
+    const weatherCondition = weatherData.weather[0].main;
+    const weatherConditionDescription = weatherData.weather[0].description;
+    const temperatureAdvice = getTemperatureAdvice(temperature);
+    const weatherConditionAdvice = getWeatherConditionAdvice(weatherCondition);
+    const response = {
+        temperature: `Température à ${city}: ${temperature} °C`,
+        temperatureMin: `${temperatureMin} °C`,
+        temperatureMax: `${temperatureMax} °C`,
+        feelsLike,
+        humidity,
+        windSpeed,
+        windDeg,
+        weatherCondition,
+        weatherConditionDescription,
+        temperatureAdvice,
+        weatherConditionAdvice,
+        logMessages: [
+            `Conditions météorologiques à ${city}: ${weatherCondition}`,
+            'Conseils de température: ' + temperatureAdvice,
+            'Conseils météorologiques: ' + weatherConditionAdvice,
+        ],
+    };
+    return response;
 };

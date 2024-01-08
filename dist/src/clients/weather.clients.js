@@ -18,5 +18,4 @@ export const getWeatherData = async (city) => {
 };
 export const getWeatherAdvice = async (city) => {
     const weatherData = await getWeatherData(city);
-    return new WeatherInfo(city, weatherData);
 };

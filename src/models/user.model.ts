@@ -18,6 +18,7 @@ interface IUser extends Document {
   addFavoriteCity: (city: string) => Promise<void>;
 }
 
+
 const UserSchema = new Schema<IUser>({
   name: { type: String, required: true, min: 2, max: 50 },
   lastname: { type: String, required: true, min: 2, max: 50 },

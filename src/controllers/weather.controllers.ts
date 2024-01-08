@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { getWeatherData, getWeatherAdvice } from '../clients/weather.clients.js';
+
 import {
   cityWeatherRequestsTotal,
   incrementCityWeatherRequests,
@@ -42,6 +43,7 @@ export const weatherController = {
       totalWeatherRequests++;
       const weatherAdvice = await getWeatherAdvice(cityName);
       incrementCityWeatherRequests();
+
       if (weatherAdvice) {
         res.json(weatherAdvice);
       } else {
@@ -51,10 +53,6 @@ export const weatherController = {
       console.error('Error fetching weather data:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
-  },
-  getWeatherRequestsStats: (req: Request, res: Response): void => {
-    // Renvoyer le nombre total de requêtes
-    res.json({ totalWeatherRequests });
-  },
+  }
 };
 
