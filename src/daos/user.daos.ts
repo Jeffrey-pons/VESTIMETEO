@@ -23,7 +23,6 @@ const register = async (name: string, lastname: string, email: string, password:
   } catch (err: any) {
     error = `Can not create user: ${err.message}`;
   }
-
   return { error, user };
 };
 

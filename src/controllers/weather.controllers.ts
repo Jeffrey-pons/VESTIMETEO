@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
 import { getWeatherData, getWeatherAdvice } from '../clients/weather.clients.js';
 
+import {
+  cityWeatherRequestsTotal,
+  incrementCityWeatherRequests,
+} from "../services/metrics.services.js";
+
 
 /**
  * @swagger
@@ -28,12 +33,16 @@ import { getWeatherData, getWeatherAdvice } from '../clients/weather.clients.js'
  *       '500':
  *         description: Erreur interne du serveur, veuillez réessayer plus
  */
+let totalWeatherRequests = 0;
 
 export const weatherController = {
   getWeatherData: async (req: Request, res: Response): Promise<void> => {
     const cityName = req.params.city as string;
     try {
+
+      totalWeatherRequests++;
       const weatherAdvice = await getWeatherAdvice(cityName);
+      incrementCityWeatherRequests();
 
       if (weatherAdvice) {
         res.json(weatherAdvice);
@@ -46,3 +55,4 @@ export const weatherController = {
     }
   }
 };
+
