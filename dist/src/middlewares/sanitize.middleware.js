@@ -1,9 +1,9 @@
 const sanitize = (obj) => {
     const keys = Object.keys(obj);
     const newObj = {};
-    for (let key of keys) {
+    for (const key of keys) {
         const value = obj[key];
-        let newValue = value;
+        const newValue = value;
         newObj[key] = newValue;
     }
     return newObj;
