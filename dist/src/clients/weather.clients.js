@@ -26,7 +26,7 @@ export const getWeatherForecast = async (city) => {
     const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
     try {
         const response = await fetch(apiUrl);
-        const forecastData = await response.json();
+        const forecastData = await response.json(); // Spécifiez le type ici
         return forecastData.list;
     }
     catch (error) {

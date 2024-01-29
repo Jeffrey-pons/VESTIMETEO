@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import { getWeatherData, getWeatherAdvice, getWeatherForecast, getCoordinatesByCityName, getAirPollutionData} from '../clients/weather.clients.js';
+import {  getWeatherAdvice, getWeatherForecast, getCoordinatesByCityName, getAirPollutionData} from '../clients/weather.clients.js';
 import { WeatherData, WeatherInfo, AirPollutionInfo} from '../models/weather.models.js';
 
 import {
-  cityWeatherRequestsTotal,
   incrementCityWeatherRequests,
+  incrementCityAirPollutionRequests,
+  incrementCityWeatherForecastRequests
 } from "../services/metrics.services.js";
 
 
@@ -16,7 +17,17 @@ import {
  */
 
 
+// Variable de compteur, non déclaré, enlever du eslint
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let totalWeatherRequests = 0;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let totalWeatherForecastRequests = 0;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let totalWeatherAirPollutionRequests = 0;
+
+
+
 
 export const weatherController = {
   /**
@@ -84,7 +95,9 @@ export const weatherController = {
     getWeatherForecast: async (req: Request, res: Response): Promise<void> => {
       const cityName = req.params.city as string;
       try {
+        totalWeatherForecastRequests++
         const forecastData = await getWeatherForecast(cityName);
+        incrementCityWeatherForecastRequests();
   
         if (forecastData) {
           const forecastInfo = forecastData.map((data: WeatherData) => new WeatherInfo(cityName, data, data.dt_txt));
@@ -126,9 +139,11 @@ export const weatherController = {
  */
     getAirPollution: async (req: Request, res: Response): Promise<void> => {
       const cityName = req.params.city as string;
-    
+                    
       try {
+        totalWeatherAirPollutionRequests++
         const coordinates = await getCoordinatesByCityName(cityName);
+        incrementCityAirPollutionRequests();
     
         if (!coordinates) {
           res.status(404).json({ error: 'Coordinates not found for the specified city' });
@@ -139,7 +154,7 @@ export const weatherController = {
     
         if (airPollutionData) {
           const airPollutionInfoArray = airPollutionData.list.map(
-            ({ main, components }: any) => new AirPollutionInfo(cityName, { list: [{ main, components,  }] })
+            ({ dt, main, components }) => new AirPollutionInfo(cityName, { coord: coordinates, list: [{ dt, main, components }] })
           );
     
           res.json({ city: cityName, airQuality: airPollutionInfoArray });

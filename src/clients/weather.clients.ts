@@ -31,8 +31,8 @@ export const getWeatherForecast = async (city: string): Promise<WeatherData[] | 
 
   try {
     const response = await fetch(apiUrl);
-    const forecastData : any = await response.json();
-    return forecastData.list as WeatherData[];
+    const forecastData: { list: WeatherData[] } = await response.json() as { list: WeatherData[] }; // Spécifiez le type ici
+    return forecastData.list;
   } catch (error) {
     console.error(error);
     return undefined;
@@ -46,7 +46,7 @@ export const getCoordinatesByCityName = async (city: string): Promise<{ lat: num
 
   try {
     const response = await fetch(apiUrl);
-    const data: any = await response.json();
+    const data = await response.json() as { lat: number; lon: number }[];
 
     if (data.length > 0) {
       const { lat, lon } = data[0];

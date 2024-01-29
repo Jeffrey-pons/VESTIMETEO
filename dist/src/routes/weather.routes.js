@@ -1,6 +1,6 @@
 import { weatherController } from '../controllers/weather.controllers.js';
 import { Router } from "express";
-const initWeatherRoutes = (app, sm, jwt) => {
+const initWeatherRoutes = (app) => {
     const router = Router();
     router.get('/:city', weatherController.getWeatherData);
     router.get('/forecast/:city', weatherController.getWeatherForecast);

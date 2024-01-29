@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { compareHash, hash } from './../utils/hash.utils.js';
+import { compareHash } from './../utils/hash.utils.js';
 import { userDaos } from './../daos/user.daos.js';
 import bcrypt from 'bcrypt';
 import { userInfos } from '../utils/user.utils.js';
 import { jwtSign } from '../middlewares/jwt.middlewares.js';
-import User from "../models/user.model.js";
+import User, { IUser } from "../models/user.model.js";
 import isPasswordValid from "../utils/password.utils.js"
 import isEmailValid from "../utils/mail.utils.js";
 import { getWeatherAdvice } from '../clients/weather.clients.js';
@@ -47,7 +47,7 @@ import { getWeatherAdvice } from '../clients/weather.clients.js';
  *         description: Vos informations sont incomplètes.
  */
 // Inscription
-const register = async (req: any, res: any) => {
+const register = async (req: Request, res: Response) => {
     const { name, lastname, email, password } = req.body;
   
     // Verification mail / mot de passe correct
@@ -91,7 +91,7 @@ const register = async (req: any, res: any) => {
     });
   };
 
-  /**
+  /**                                     
  * @swagger
  * /users/login:
  *   post:
@@ -123,10 +123,14 @@ const login = async (req: Request, res: Response): Promise<void> => {
   const { user, error } = await userDaos.findByEmail(email);
   if (!!error || !user) {
      res.status(400).json({ message: errMsg });
+     return;
   }
 
   const { err, match } = await compareHash(password, user.password);
-  if (!!err || !match)  res.status(400).json({ message: errMsg });
+  if (!!err || !match) {
+    res.status(400).json({ message: errMsg });
+    return;
+  } 
 
   const token = jwtSign(user.id);
 
@@ -263,7 +267,7 @@ const getUserbyToken = async (req: Request, res: Response): Promise<void> => {
   if (user) {
     res.status(202).json({message: "Vérification du jeton réussie"});
   } else {
-    res.status(401).json({message : "Erreur lors de la vérification du jeton réussie"});
+    res.status(401).json({error, message : "Erreur lors de la vérification du jeton réussie"});
   }
 };
 
@@ -349,7 +353,7 @@ const addFavoritesCities = async (req: Request, res: Response) => {
     const userId = req.params.id;
     const { favoritesCity } = req.body;
 
-    const user: any = await User.findById(userId);
+    const user: IUser | null = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur introuvable' });
     }
@@ -403,7 +407,7 @@ const deleteFavoritesCities = async (req: Request, res: Response) => {
     const userId = req.params.id;
     const { favoritesToDelete } = req.body;
 
-    const user: any = await User.findById(userId);
+    const user: IUser | null = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur introuvable' });
     }

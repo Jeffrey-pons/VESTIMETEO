@@ -1,4 +1,4 @@
-import { getTemperatureAdvice, getWeatherConditionAdvice } from "../services/weather.conditions.services.js";
+import { getTemperatureAdvice, getWeatherConditionAdvice, WeatherCondition   } from "../services/weather.conditions.services.js";
 
 /**
  * @swagger
@@ -56,7 +56,6 @@ import { getTemperatureAdvice, getWeatherConditionAdvice } from "../services/wea
  *         - weather
  *         - dt_txt
  */
-
 export interface WeatherData {
   main: {
     temp: number;
@@ -76,6 +75,73 @@ export interface WeatherData {
   dt_txt: string;
 }
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     AirPollutionData:
+ *       type: object
+ *       properties:
+ *         coord:
+ *           type: object
+ *           properties:
+ *             lat:
+ *               type: number
+ *             lon:
+ *               type: number
+ *           required:
+ *             - lat
+ *             - lon
+ *         list:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               dt:
+ *                 type: number
+ *               main:
+ *                 type: object
+ *                 properties:
+ *                   aqi:
+ *                     type: number
+ *                 required:
+ *                   - aqi
+ *               components:
+ *                 type: object
+ *                 properties:
+ *                   co:
+ *                     type: number
+ *                   no:
+ *                     type: number
+ *                   no2:
+ *                     type: number
+ *                   o3:
+ *                     type: number
+ *                   so2:
+ *                     type: number
+ *                   pm2_5:
+ *                     type: number
+ *                   pm10:
+ *                     type: number
+ *                   nh3:
+ *                     type: number
+ *                 required:
+ *                   - co
+ *                   - no
+ *                   - no2
+ *                   - o3
+ *                   - so2
+ *                   - pm2_5
+ *                   - pm10
+ *                   - nh3
+ *           required:
+ *             - dt
+ *             - main
+ *             - components
+ *       required:
+ *         - coord
+ *         - list
+ */
 export interface AirPollutionData {
   coord: {
     lat: number;
@@ -141,7 +207,6 @@ export interface AirPollutionData {
  *         - temperatureAdvice
  *         - weatherConditionAdvice
  */
-
 export class WeatherInfo {
   date: string;
   temperature: string;
@@ -180,41 +245,65 @@ export class WeatherInfo {
       this.weatherConditionDescription = weatherData.weather[0].description;
 
       const temperatureAdvice = getTemperatureAdvice(weatherData.main.temp);
-      const weatherConditionAdvice = getWeatherConditionAdvice(weatherData.weather[0].main);
+      const weatherCondition: string = weatherData.weather[0].main;
+      const weatherConditionAdvice = getWeatherConditionAdvice(weatherCondition as WeatherCondition);
+
 
       this.temperatureAdvice = `Conseil de température : ${temperatureAdvice}`;
       this.weatherConditionAdvice = `Conseil de conditions météorologiques : ${weatherConditionAdvice}`;
     }
-    
   }
-  
-// Formatage de la date renvoyée
+
   private formatDate(dateTxt: string): string {
-    const options: Intl.DateTimeFormatOptions = {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false,
-    };
-  
-    let formattedDate: string;
-  // Vérification de la validité de la date
-    const date = new Date(dateTxt);
-    if (isNaN(date.getTime())) {
-      formattedDate = new Date().toLocaleDateString('fr-FR', options);
-    } else {
-      formattedDate = date.toLocaleDateString('fr-FR', options);
-    }
-    return formattedDate;
+    return genericFormatDate(dateTxt);
   }
-  
 }
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     AirPollutionInfo:
+ *       type: object
+ *       properties:
+ *         cityName:
+ *           type: string
+ *         date:
+ *           type: string
+ *         airQualityIndex:
+ *           type: string
+ *         coConcentration:
+ *           type: string
+ *         noConcentration:
+ *           type: string
+ *         no2Concentration:
+ *           type: string
+ *         o3Concentration:
+ *           type: string
+ *         so2Concentration:
+ *           type: string
+ *         pm2_5Concentration:
+ *           type: string
+ *         pm10Concentration:
+ *           type: string
+ *         nh3Concentration:
+ *           type: string
+ *       required:
+ *         - cityName
+ *         - date
+ *         - airQualityIndex
+ *         - coConcentration
+ *         - noConcentration
+ *         - no2Concentration
+ *         - o3Concentration
+ *         - so2Concentration
+ *         - pm2_5Concentration
+ *         - pm10Concentration
+ *         - nh3Concentration
+ */
 export class AirPollutionInfo {
   cityName: string;
-  date: number;
+  date: string;
   airQualityIndex: string;
   coConcentration: string;
   noConcentration: string;
@@ -225,12 +314,12 @@ export class AirPollutionInfo {
   pm10Concentration: string;
   nh3Concentration: string;
 
-  constructor(cityName: string, airPollutionData: any) {
+  constructor(cityName: string, airPollutionData: AirPollutionData) {
     const { list } = airPollutionData;
-    const [{ main, components }] = list;
+    const [{ dt, main, components }] = list;
 
     this.cityName = `Vous regardez la pollution atmosphérique de la ville de ${cityName}`;
-    this.date = list.dt;
+    this.date = `Le ${genericFormatDate(dt)}`;
     this.airQualityIndex = `L'indice de qualité de l'air est de ${main.aqi} sur 5. Où 1 = Très Bon, 2 = Bon, 3 = Modéré, 4 = Mauvais, 5 = Très mauvais.`;
     this.coConcentration = `La concentration de CO (Monoxyde de carbone) est de ${components.co} μg/m³.`;
     this.noConcentration = `La concentration de NO (Monoxyde d'azote)est de ${components.no} μg/m³.`;
@@ -241,4 +330,24 @@ export class AirPollutionInfo {
     this.pm10Concentration = `La concentration de PM10 (particules grossières) est de ${components.pm10} μg/m³.`;
     this.nh3Concentration = `La concentration de NH3 (ammoniac) est de ${components.nh3} μg/m³.`;
   }
+}
+
+function genericFormatDate(dateTxt: string | number): string {
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  };
+
+  let formattedDate: string;
+  const date = typeof dateTxt === 'number' ? new Date(dateTxt * 1000) : new Date(dateTxt);
+  if (isNaN(date.getTime())) {
+    formattedDate = new Date().toLocaleDateString('fr-FR', options);
+  } else {
+    formattedDate = date.toLocaleDateString('fr-FR', options);
+  }
+  return formattedDate;
 }

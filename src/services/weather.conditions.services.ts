@@ -1,4 +1,7 @@
-export const getWeatherConditionAdvice = (condition: any) => {
+export type WeatherCondition = 'Clear' | 'Clouds' | 'Rain' | 'Snow' | 'Fog';
+export type Temperature = number;
+
+export const getWeatherConditionAdvice = (condition: WeatherCondition) => {
   switch (condition) {
     case 'Clear':
       return 'Le ciel est dégagé, offrant une journée ensoleillée. N\'oubliez pas vos lunettes de soleil pour protéger vos yeux des rayons UV. Il pourrait être judicieux de porter un chapeau ou une casquette pour une protection supplémentaire contre le soleil. Évitez une exposition prolongée au soleil, et assurez-vous d\'appliquer une crème solaire pour protéger votre peau. Gardez-vous bien hydraté tout au long de la journée.';
@@ -13,9 +16,9 @@ export const getWeatherConditionAdvice = (condition: any) => {
     default:
       return '';
   }
-}
+}   
 
-export const getTemperatureAdvice = (temperature: any) => {
+export const getTemperatureAdvice = (temperature: Temperature) => {
   switch (true) {
     case (temperature <= -30):
       return 'À des températures aussi extrêmement basses, il est impératif de porter des vêtements très chauds. Optez pour une cagoule, une doudoune, des bottes isolées et des gants épais pour vous protéger du froid glacial. Couvrez-vous bien et évitez toute exposition prolongée.';

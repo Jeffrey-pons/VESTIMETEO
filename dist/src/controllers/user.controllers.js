@@ -102,10 +102,13 @@ const login = async (req, res) => {
     const { user, error } = await userDaos.findByEmail(email);
     if (!!error || !user) {
         res.status(400).json({ message: errMsg });
+        return;
     }
     const { err, match } = await compareHash(password, user.password);
-    if (!!err || !match)
+    if (!!err || !match) {
         res.status(400).json({ message: errMsg });
+        return;
+    }
     const token = jwtSign(user.id);
     res
         .status(201)
@@ -236,7 +239,7 @@ const getUserbyToken = async (req, res) => {
         res.status(202).json({ message: "Vérification du jeton réussie" });
     }
     else {
-        res.status(401).json({ message: "Erreur lors de la vérification du jeton réussie" });
+        res.status(401).json({ error, message: "Erreur lors de la vérification du jeton réussie" });
     }
 };
 /**

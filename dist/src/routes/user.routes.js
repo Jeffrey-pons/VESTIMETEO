@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { userController } from "../controllers/user.controllers.js";
-const initUserRoutes = (app, sm, jwt) => {
+import { jwtMiddleware, verifyToken } from "../middlewares/jwt.middlewares.js";
+const initUserRoutes = (app, sm = jwtMiddleware, jwt = verifyToken) => {
     const router = Router();
     router.post("/register", sm, userController.register);
     router.post("/login", sm, userController.login);

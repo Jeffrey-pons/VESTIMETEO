@@ -11,7 +11,12 @@ const MongoDb = async () => {
         console.log("Database connected");
     }
     catch (error) {
-        console.log("Not connected: ", error.message);
+        if (error instanceof Error) {
+            console.log("Error:", error.message);
+        }
+        else {
+            console.log("Not connected: ", error);
+        }
     }
 };
 export default MongoDb;
