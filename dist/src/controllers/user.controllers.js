@@ -276,47 +276,6 @@ const deleteUser = async (req, res) => {
             .json({ error: "Erreur lors de la suppression du compte utilisateur" });
     }
 };
-/**
- * @swagger
- * /users/history/{userId}:
- *   get:
- *     summary: Get user advice history by user ID
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         description: ID of the user to retrieve advice history for
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: Historique des conseils utilisateur récupéré avec succès.
- *       '404':
- *         description: Utilisateur introuvable.
- *       '500':
- *         description: Erreur technique sur notre serveur. Veuillez réessayer plus tard.
- */
-// Fetch user's advice history => NE FONCTIONNE pas
-const getUserHistory = async (req, res) => {
-    try {
-        // Utilisez le middleware JWT pour extraire l'ID de l'utilisateur à partir du jeton
-        const userId = req.params.id;
-        // Recherchez l'utilisateur dans la base de données
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'Utilisateur introuvable' });
-        }
-        // Récupérez l'historique des conseils à partir du champ weatherHistory
-        const adviceHistory = user.weatherHistory;
-        // Répondez avec l'historique des conseils
-        res.status(200).json(adviceHistory);
-    }
-    catch (error) {
-        console.error("Erreur lors de la récupération de l'historique des conseils utilisateur :", error);
-        res.status(500).json({ error: "Erreur lors de la récupération de l'historique des conseils utilisateur" });
-    }
-};
 // Ajout d'une ville au favoris
 /**
  * @swagger
@@ -476,6 +435,47 @@ export const getFavoritesCities = async (req, res) => {
         res.status(500).json({ error: "Erreur lors de la récupération des villes favorites et des températures" });
     }
 };
+/**
+ * @swagger
+ * /users/history/{userId}:
+ *   get:
+ *     summary: Get user advice history by user ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: ID of the user to retrieve advice history for
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Historique des conseils utilisateur récupéré avec succès.
+ *       '404':
+ *         description: Utilisateur introuvable.
+ *       '500':
+ *         description: Erreur technique sur notre serveur. Veuillez réessayer plus tard.
+ */
+// Fetch user's advice history => NE FONCTIONNE pas
+const getUserHistory = async (req, res) => {
+    try {
+        // Utilisez le middleware JWT pour extraire l'ID de l'utilisateur à partir du jeton
+        const userId = req.params.id;
+        // Recherchez l'utilisateur dans la base de données
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Utilisateur introuvable' });
+        }
+        // Récupérez l'historique des conseils à partir du champ weatherHistory
+        const adviceHistory = user.weatherHistory;
+        // Répondez avec l'historique des conseils
+        res.status(200).json(adviceHistory);
+    }
+    catch (error) {
+        console.error("Erreur lors de la récupération de l'historique des conseils utilisateur :", error);
+        res.status(500).json({ error: "Erreur lors de la récupération de l'historique des conseils utilisateur" });
+    }
+};
 export const userController = {
     register,
     login,
@@ -483,8 +483,8 @@ export const userController = {
     updateUser,
     getUserbyToken,
     deleteUser,
-    getUserHistory,
     addFavoritesCities,
     deleteFavoritesCities,
-    getFavoritesCities
+    getFavoritesCities,
+    getUserHistory
 };

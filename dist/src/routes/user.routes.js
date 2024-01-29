@@ -7,10 +7,10 @@ const initUserRoutes = (app, sm, jwt) => {
     router.get("/infos/:id", jwt, userController.getUserInfos);
     router.put("/:id", jwt, userController.updateUser);
     router.delete("/:id", jwt, userController.deleteUser);
-    router.get("/history/:id", jwt, userController.getUserHistory);
     router.post("/favorites/:id", jwt, userController.addFavoritesCities);
     router.get('/favorites/:id', userController.getFavoritesCities);
     router.delete('/favorites/:id', jwt, userController.deleteFavoritesCities);
+    router.get("/history/:id", jwt, userController.getUserHistory);
     app.use("/users", router);
 };
 export default initUserRoutes;

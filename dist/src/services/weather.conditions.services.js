@@ -8,6 +8,8 @@ export const getWeatherConditionAdvice = (condition) => {
             return 'La pluie tombe, alors assurez-vous de porter un imperméable et des chaussures imperméables pour rester au sec. Un parapluie peut également être utile pour vous protéger davantage contre les averses. Optez pour des vêtements qui sèchent rapidement, et n\'oubliez pas de rester bien couvert pour éviter de prendre froid.';
         case 'Snow':
             return 'Il neige, alors habillez-vous chaudement avec des bottes imperméables pour affronter les conditions hivernales. Portez des gants, une écharpe et un bonnet pour vous protéger du froid. Prenez votre temps en marchant sur des surfaces enneigées et glissantes. Profitez de cette journée hivernale en créant un bonhomme de neige ou en savourant une boisson chaude.';
+        case 'Fog':
+            return 'Le brouillard réduit la visibilité, soyez prudent lorsque vous conduisez ou que vous vous déplacez à pied. Allumez vos phares si vous conduisez, et soyez attentif aux autres usagers de la route. Privilégiez les itinéraires familiers et ralentissez votre allure. Si vous marchez, restez vigilant et utilisez des vêtements réfléchissants pour améliorer votre visibilité.';
         default:
             return '';
     }

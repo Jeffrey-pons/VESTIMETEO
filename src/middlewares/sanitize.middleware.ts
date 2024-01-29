@@ -8,9 +8,9 @@ const sanitize = (obj: AnyObject): AnyObject => {
   const keys = Object.keys(obj);
   const newObj: AnyObject = {};
 
-  for (let key of keys) {
+  for (const key of keys) {
     const value = obj[key];
-    let newValue = value;
+    const newValue = value;
 
     newObj[key] = newValue;
   }

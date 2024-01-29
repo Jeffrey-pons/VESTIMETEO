@@ -75,14 +75,37 @@ const cityWeatherRequestsTotal = new prometheus.Counter({
   registers: [register],
 });
 
+const cityWeatherForecastRequestsTotal = new prometheus.Counter({
+  name: 'city_weather_forecast_requests_total',
+  help: 'Total number of city weather forecast requests',
+  registers: [register],
+});
+
+const cityAirPollutionRequestsTotal = new prometheus.Counter({
+  name: 'city_air_pollution_requests_total',
+  help: 'Total number of city air pollution information requests',
+  registers: [register],
+});
+
 // Fonction pour incrémenter le compteur personnalisé
 function incrementCustomCounter() {
   customCounter.inc();
 }
 
+// Fonction pour incrémenter le compteur de prévisions météo
 function incrementCityWeatherRequests() {
-    cityWeatherRequestsTotal.inc();
-  }  
+  cityWeatherRequestsTotal.inc();
+}
+
+// Fonction pour incrémenter le compteur de prévisions météo
+function incrementCityWeatherForecastRequests() {
+  cityWeatherForecastRequestsTotal.inc();
+}
+
+// Fonction pour incrémenter le compteur de pollution de l'air
+function incrementCityAirPollutionRequests() {
+  cityAirPollutionRequestsTotal.inc();
+}
 
 // Middleware Express pour exporter les métriques
 function metricsMiddleware(req: any, res: any, next: any) {
@@ -93,10 +116,15 @@ function metricsMiddleware(req: any, res: any, next: any) {
 }
 
 export {
-    httpRequestTotal,
-    httpRequestDurationSeconds,
-    cityWeatherRequestsTotal,
-    incrementCustomCounter,
-    metricsMiddleware,
-    incrementCityWeatherRequests
-  };
+  httpRequestTotal,
+  httpRequestDurationSeconds,
+  cityWeatherRequestsTotal,
+  userRegistrationsTotal,
+  cityWeatherForecastRequestsTotal,
+  cityAirPollutionRequestsTotal,
+  incrementCustomCounter,
+  metricsMiddleware,
+  incrementCityWeatherRequests,
+  incrementCityWeatherForecastRequests,
+  incrementCityAirPollutionRequests
+};
