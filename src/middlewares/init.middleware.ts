@@ -1,8 +1,8 @@
 import cors from "cors";
-import express from "express";
+import express, {Express} from "express";
 import helmet from "helmet";
 
-const initMiddlewares = (app: any) => {
+const initMiddlewares = (app: Express) => {
   const corsOrigin = "*";
 
   const corsOptions = {

@@ -13,8 +13,10 @@ export const hash = async (password: string): Promise<HashResult> => {
 
   try {
     hashed = await bcrypt.hash(password, SALT_ROUND);
-  } catch (e: any) {
-    error = `Error when hash: ${e.message}`;
+  } catch (e) {
+    if (e instanceof Error) {
+      error = `Error when hash: ${e.message}`;
+    }
   }
 
   return { hashed, err: error };
@@ -31,8 +33,10 @@ export const compareHash = async (password: string, toCompare: string): Promise<
 
   try {
     match = await bcrypt.compare(password, toCompare);
-  } catch (e: any) {
-    error = `Error when compare: ${e.message}`;
+  } catch (e) {
+    if (e instanceof Error) {
+      error = `Error when compare: ${e.message}`;
+    }
   }
 
   return { match, err: error };

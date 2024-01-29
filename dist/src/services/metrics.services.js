@@ -15,45 +15,15 @@ const httpRequestDurationSeconds = new prometheus.Histogram({
     help: 'HTTP request duration in seconds',
     registers: [register],
 });
-const httpRequestErrorsTotal = new prometheus.Counter({
-    name: 'http_request_errors_total',
-    help: 'Total number of HTTP request errors',
-    registers: [register],
-});
-const cpuUsagePercentage = new prometheus.Gauge({
-    name: 'cpu_usage_percentage',
-    help: 'CPU usage percentage',
-    registers: [register],
-});
-const memoryUsageBytes = new prometheus.Gauge({
-    name: 'memory_usage_bytes',
-    help: 'Memory usage in bytes',
-    registers: [register],
-});
 // Métriques personnalisées
 const customCounter = new prometheus.Counter({
     name: 'custom_counter_total',
     help: 'Total number of custom events',
     registers: [register],
 });
-const customOperationsTotal = new prometheus.Counter({
-    name: 'custom_operations_total',
-    help: 'Total number of custom operations',
-    registers: [register],
-});
-const customProcessingDurationSeconds = new prometheus.Histogram({
-    name: 'custom_processing_duration_seconds',
-    help: 'Custom processing duration in seconds',
-    registers: [register],
-});
 const userRegistrationsTotal = new prometheus.Histogram({
     name: 'user_registrations_total',
     help: 'Total number of user registrations',
-    registers: [register],
-});
-const userLoginsTotal = new prometheus.Counter({
-    name: 'user_logins_total',
-    help: 'Total number of user logins',
     registers: [register],
 });
 const cityWeatherRequestsTotal = new prometheus.Counter({
@@ -88,7 +58,7 @@ function incrementCityAirPollutionRequests() {
     cityAirPollutionRequestsTotal.inc();
 }
 // Middleware Express pour exporter les métriques
-function metricsMiddleware(req, res, next) {
+function metricsMiddleware(req, res) {
     res.set('Content-Type', register.contentType);
     register.metrics().then((metrics) => {
         res.end(metrics);

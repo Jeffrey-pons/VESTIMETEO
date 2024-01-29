@@ -1,7 +1,8 @@
 import { weatherController } from '../controllers/weather.controllers.js';
-import {Router} from "express" 
+import {Router} from "express";
+import { Express } from 'express';
 
-const initWeatherRoutes = (app: any, sm: any, jwt: any) => {
+const initWeatherRoutes = (app: Express) => {
 
     const router = Router();
 
