@@ -107,12 +107,13 @@ const login = async (req, res) => {
     const { err, match } = await compareHash(password, user.password);
     if (!!err || !match) {
         res.status(400).json({ message: errMsg });
-        return;
     }
-    const token = jwtSign(user.id);
-    res
-        .status(201)
-        .json({ message: "Connexion réussie", user: userInfos(user), token: token });
+    else {
+        const token = jwtSign(user.id);
+        res
+            .status(201)
+            .json({ message: "Connexion réussie", user: userInfos(user), token: token });
+    }
 };
 /**
  * @swagger
