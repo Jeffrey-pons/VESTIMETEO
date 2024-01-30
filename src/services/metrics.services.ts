@@ -1,14 +1,12 @@
 import prometheus from 'prom-client';
 import { Request, Response} from 'express';
 
-// Collecte automatique des métriques par défaut
+
 const collectDefaultMetrics = prometheus.collectDefaultMetrics;
 
-// Créez un objet pour enregistrer vos métriques
 const register = new prometheus.Registry();
 collectDefaultMetrics({ register });
 
-// Métriques génériques
 const httpRequestTotal = new prometheus.Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
@@ -21,30 +19,17 @@ const httpRequestDurationSeconds = new prometheus.Histogram({
   registers: [register],
 });
 
-
-
-
-
-
-
-// Métriques personnalisées
 const customCounter = new prometheus.Counter({
   name: 'custom_counter_total',
   help: 'Total number of custom events',
   registers: [register],
 });
 
-
-
-
-
 const userRegistrationsTotal = new prometheus.Histogram({
   name: 'user_registrations_total',
   help: 'Total number of user registrations',
   registers: [register],
 });
-
-
 
 const cityWeatherRequestsTotal = new prometheus.Counter({
   name: 'city_weather_requests_total',
@@ -64,22 +49,18 @@ const cityAirPollutionRequestsTotal = new prometheus.Counter({
   registers: [register],
 });
 
-// Fonction pour incrémenter le compteur personnalisé
 function incrementCustomCounter() {
   customCounter.inc();
 }
 
-// Fonction pour incrémenter le compteur de prévisions météo
 function incrementCityWeatherRequests() {
   cityWeatherRequestsTotal.inc();
 }
 
-// Fonction pour incrémenter le compteur de prévisions météo
 function incrementCityWeatherForecastRequests() {
   cityWeatherForecastRequestsTotal.inc();
 }
 
-// Fonction pour incrémenter le compteur de pollution de l'air
 function incrementCityAirPollutionRequests() {
   cityAirPollutionRequestsTotal.inc();
 }

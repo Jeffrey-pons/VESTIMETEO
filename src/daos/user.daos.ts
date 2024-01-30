@@ -23,10 +23,7 @@ const register = async (name: string, lastname: string, email: string, password:
     if (error instanceof Error) {
       console.error(`Can not create user: ${error.message}`);
       result.error = `Can not create user: ${error.message}`;
-    } else {
-      console.error(`Can not create user: ${error}`);
-      result.error = `Can not create user: ${error}`;
-    }
+    } 
   }
   return result;
 };

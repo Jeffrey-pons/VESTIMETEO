@@ -129,14 +129,15 @@ const login = async (req: Request, res: Response): Promise<void> => {
   const { err, match } = await compareHash(password, user.password);
   if (!!err || !match) {
     res.status(400).json({ message: errMsg });
-    return;
-  } 
+  } else {
+    const token = jwtSign(user.id);
 
-  const token = jwtSign(user.id);
+    res
+     .status(201)
+     .json({ message: "Connexion réussie", user: userInfos(user), token: token });
+  }
 
-   res
-    .status(201)
-    .json({ message: "Connexion réussie", user: userInfos(user), token: token });
+  
 };
 
 /**
