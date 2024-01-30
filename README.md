@@ -14,6 +14,7 @@ Assurez-vous d'avoir Node.js et npm d'installés.
 ## Usage
 - Compiler TypeScript : `npx tsc`
 - Démarrez le linter (ESLint) : `npm run lint`
+- Démarrez le Dockercompose : `docker-compose up -d`
 - Démarrez l'application : `npm run dev`
 - Visitez http://localhost:8000 dans votre navigateur.
 
