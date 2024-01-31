@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response} from 'express';
 import { compareHash } from './../utils/hash.utils.js';
 import { userDaos } from './../daos/user.daos.js';
 import bcrypt from 'bcrypt';
@@ -8,6 +8,7 @@ import User, { IUser } from "../models/user.model.js";
 import isPasswordValid from "../utils/password.utils.js"
 import isEmailValid from "../utils/mail.utils.js";
 import { getWeatherAdvice } from '../clients/weather.clients.js';
+import { ManagementError } from '../utils/managementError.utils.js';
 
 /**
  * @swagger
@@ -48,30 +49,28 @@ import { getWeatherAdvice } from '../clients/weather.clients.js';
  */
 // Inscription
 const register = async (req: Request, res: Response) => {
+  try {
     const { name, lastname, email, password } = req.body;
   
-    // Verification mail / mot de passe correct
-     
-    const { valid, errors } = isPasswordValid(password);
+    const { valid } = isPasswordValid(password);
     if (!valid) {
-        return res.status(400).json({ message: "Le mot de passe ne répond pas aux critères de complexité", errors });
+        throw new ManagementError(400, "Le mot de passe ne répond pas aux critères de complexité");
     }
 
     if (!isEmailValid(email)) {
-        return res.status(400).json({ message: "Adresse e-mail invalide" });
+        throw new ManagementError(400, "Adresse e-mail invalide");
     }
 
     const emailExists = await userDaos.findByEmail(email);
 
     if (emailExists.user) {
-        return res.status(400).json({ message: "Adresse e-mail déjà utilisée" });
+        throw new ManagementError(400, "Adresse e-mail déjà utilisée");
     }
   
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
   
     const { user, error } = await userDaos.register(
-
       name,
       lastname,
       email,
@@ -79,7 +78,7 @@ const register = async (req: Request, res: Response) => {
     );
   
     if (!!error || !user) {
-      return res.status(400).json({ message: "Erreur lors de l'inscription" });
+      throw new ManagementError(400, "Erreur lors de l'inscription");
     }
   
     const token = jwtSign(user.id);
@@ -89,7 +88,11 @@ const register = async (req: Request, res: Response) => {
       user: userInfos(user),
       token: token,
     });
-  };
+  } catch (error) {
+    console.error(error);
+    throw new ManagementError(400, "Erreur lors de l'inscription");
+  }
+};
 
   /**                                     
  * @swagger
@@ -117,26 +120,25 @@ const register = async (req: Request, res: Response) => {
  */
 // Connexion
 const login = async (req: Request, res: Response): Promise<void> => {
+try {
   const { email, password } = req.body;
-  const errMsg = `Échec de l'authentification. Veuillez vérifier votre adresse e-mail et votre mot de passe.`;
 
   const { user, error } = await userDaos.findByEmail(email);
   if (!!error || !user) {
-     res.status(400).json({ message: errMsg });
-     return;
+     throw new ManagementError(400, `Échec de l'authentification. Veuillez vérifier votre adresse e-mail et votre mot de passe.`);
   }
 
   const { err, match } = await compareHash(password, user.password);
   if (!!err || !match) {
-    res.status(400).json({ message: errMsg });
+    throw new ManagementError(400, `Échec de l'authentification. Veuillez vérifier votre adresse e-mail et votre mot de passe.`);
   } else {
     const token = jwtSign(user.id);
 
-    res
-     .status(201)
-     .json({ message: "Connexion réussie", user: userInfos(user), token: token });
+    res.status(201).json({ message: "Connexion réussie", user: userInfos(user), token: token });
   }
-
+} catch (error) {
+  throw new ManagementError(500, `Erreur lors de la connexion`);
+}
   
 };
 
@@ -168,7 +170,7 @@ const getUserInfos = async (req: Request, res: Response) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: 'Utilisateur introuvable' });
+      throw new ManagementError(404, 'Utilisateur introuvable');
     }
 
     res.status(200).json({
@@ -178,8 +180,7 @@ const getUserInfos = async (req: Request, res: Response) => {
       lastLoginDate: user.lastLoginDate,
     });
   } catch (error) {
-    console.error("Erreur lors de la récupération des informations utilisateur :", error);
-    res.status(500).json({ error: "Erreur lors de la récupération des informations utilisateur" });
+    throw new ManagementError(500, "Erreur lors de la récupération des informations utilisateur" );
   }
 };
 
@@ -234,8 +235,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({ message: "Informations utilisateur mises à jour avec succès" });
   } catch (error) {
-    console.error("Erreur lors de la mise à jour des informations utilisateur :", error);
-    res.status(500).json({ error: "Erreur lors de la mise à jour des informations utilisateur" });
+    throw new ManagementError(500, "Erreur lors de la mise à jour des informations utilisateur");
   }
 };
 
@@ -263,13 +263,17 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
  */
 // Verification Token
 const getUserbyToken = async (req: Request, res: Response): Promise<void> => {
+  try {
   const token = req.body.token;
-  const { user, error } = await userDaos.findByToken(token);
+  const { user} = await userDaos.findByToken(token);
   if (user) {
     res.status(202).json({message: "Vérification du jeton réussie"});
   } else {
-    res.status(401).json({error, message : "Erreur lors de la vérification du jeton réussie"});
+    throw new ManagementError(401, "Erreur lors de la vérification du jeton réussie");
   }
+ } catch (error) {
+  throw new ManagementError(500, "Erreur lors de la vérification du jeton")
+ }
 };
 
 /**
@@ -302,13 +306,7 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
       .status(200)
       .json({ message: "Compte utilisateur supprimé avec succès" });
   } catch (error) {
-    console.error(
-      "Erreur lors de la suppression du compte utilisateur :",
-      error
-    );
-    res
-      .status(500)
-      .json({ error: "Erreur lors de la suppression du compte utilisateur" });
+    throw new ManagementError(500, "Erreur lors de la suppression du compte utilisateur");
   }
 };
 
@@ -356,15 +354,14 @@ const addFavoritesCities = async (req: Request, res: Response) => {
 
     const user: IUser | null = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'Utilisateur introuvable' });
+      throw new ManagementError(404, 'Utilisateur introuvable' );
     }
 
     await user.addFavoriteCity(favoritesCity);
 
     res.status(200).json({ message: `Ville ${favoritesCity} ajoutée aux favoris avec succès` });
   } catch (error) {
-    console.error("Erreur lors de l'ajout de la ville aux favoris :", error);
-    res.status(500).json({ error: "Erreur lors de l'ajout de la ville aux favoris" });
+    throw new ManagementError(500, "Erreur lors de l'ajout de la ville aux favoris" );
   }
 };
 
@@ -410,7 +407,7 @@ const deleteFavoritesCities = async (req: Request, res: Response) => {
 
     const user: IUser | null = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'Utilisateur introuvable' });
+      throw new ManagementError(404, 'Utilisateur introuvable' );
     }
 
     user.favoritesCity = user.favoritesCity.filter((fav: string) => !favoritesToDelete.includes(fav));
@@ -418,8 +415,7 @@ const deleteFavoritesCities = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: 'Favoris supprimés avec succès' });
   } catch (error) {
-    console.error("Erreur lors de la suppression des favoris :", error);
-    res.status(500).json({ error: "Erreur lors de la suppression des favoris" });
+    throw new ManagementError(500, "Erreur lors de la suppression des favoris" );
   }
 };
 
@@ -451,7 +447,7 @@ export const getFavoritesCities = async (req: Request, res: Response) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'Utilisateur introuvable' });
+      throw new ManagementError(404, 'Utilisateur introuvable' );
     }
 
     const favoriteCities = user.favoritesCity;
@@ -461,7 +457,7 @@ export const getFavoritesCities = async (req: Request, res: Response) => {
       const weatherInfo = await getWeatherAdvice(city);
 
       if ('error' in weatherInfo) {
-        console.error(`Erreur lors de la récupération des informations météorologiques pour ${city}: ${weatherInfo.error}`);
+        throw new ManagementError(500, `Erreur lors de la récupération des informations météorologiques pour ${city}: ${weatherInfo.error}`);
       } else {
         temperatures.push({
           city,
@@ -477,8 +473,7 @@ export const getFavoritesCities = async (req: Request, res: Response) => {
 
     res.status(200).json(temperatures);
   } catch (error) {
-    console.error("Erreur lors de la récupération des villes favorites et des températures :", error);
-    res.status(500).json({ error: "Erreur lors de la récupération des villes favorites et des températures" });
+    throw new ManagementError(500, "Erreur lors de la récupération des villes favorites et des températures" );
   }
 };
 
@@ -503,30 +498,24 @@ export const getFavoritesCities = async (req: Request, res: Response) => {
  *       '500':
  *         description: Erreur technique sur notre serveur. Veuillez réessayer plus tard.
  */
-// Fetch user's advice history => NE FONCTIONNE pas
+// Bug
 const getUserHistory = async (req: Request, res: Response) => {
   try {
-    // Utilisez le middleware JWT pour extraire l'ID de l'utilisateur à partir du jeton
     const userId = req.params.id;
 
-    // Recherchez l'utilisateur dans la base de données
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: 'Utilisateur introuvable' });
+      throw new ManagementError(404, 'Utilisateur introuvable' );
     }
-
-    // Récupérez l'historique des conseils à partir du champ weatherHistory
     const adviceHistory = user.weatherHistory;
 
     // Répondez avec l'historique des conseils
     res.status(200).json(adviceHistory);
   } catch (error) {
-    console.error("Erreur lors de la récupération de l'historique des conseils utilisateur :", error);
-    res.status(500).json({ error: "Erreur lors de la récupération de l'historique des conseils utilisateur" });
+    throw new ManagementError(500, "Erreur lors de la récupération de l'historique des conseils utilisateur" );
   }
 };
-
 
 export const userController = {
   register,

@@ -1,5 +1,6 @@
 import { getWeatherAdvice, getWeatherForecast, getCoordinatesByCityName, getAirPollutionData } from '../clients/weather.clients.js';
 import { WeatherInfo, AirPollutionInfo } from '../models/weather.models.js';
+import { ManagementError } from '../utils/managementError.utils.js';
 import { incrementCityWeatherRequests, incrementCityAirPollutionRequests, incrementCityWeatherForecastRequests } from "../services/metrics.services.js";
 /**
  * @swagger
@@ -44,12 +45,11 @@ export const weatherController = {
                 res.json(weatherAdvice);
             }
             else {
-                res.status(500).json({ error: 'Internal Server Error' });
+                throw new ManagementError(500, 'Les informations n ont pas été correctement récupérées');
             }
         }
         catch (error) {
-            console.error('Error fetching weather data:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
+            throw new ManagementError(500, 'Erreur interne du serveur');
         }
     },
     /**
@@ -87,12 +87,11 @@ export const weatherController = {
                 res.json(forecastInfo);
             }
             else {
-                res.status(500).json({ error: 'Internal Server Error' });
+                throw new ManagementError(500, 'Les informations n ont pas été correctement récupérées');
             }
         }
         catch (error) {
-            console.error('Error fetching weather forecast:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
+            throw new ManagementError(500, 'Erreur interne du serveur');
         }
     },
     /**
@@ -128,8 +127,7 @@ export const weatherController = {
             const coordinates = await getCoordinatesByCityName(cityName);
             incrementCityAirPollutionRequests();
             if (!coordinates) {
-                res.status(404).json({ error: 'Coordinates not found for the specified city' });
-                return;
+                throw new ManagementError(404, 'Coordonnées introuvables pour la ville spécifiée');
             }
             const airPollutionData = await getAirPollutionData(coordinates.lat, coordinates.lon);
             if (airPollutionData) {
@@ -137,12 +135,11 @@ export const weatherController = {
                 res.json({ city: cityName, airQuality: airPollutionInfoArray });
             }
             else {
-                res.status(500).json({ error: 'Internal Server Error while fetching air pollution data' });
+                throw new ManagementError(500, 'Les informations n ont pas été correctement récupérées');
             }
         }
         catch (error) {
-            console.error('Error fetching air pollution data:', error);
-            res.status(500).json({ error: 'Internal Server Error while fetching air pollution data' });
+            throw new ManagementError(500, 'Erreur interne du serveur');
         }
-    }
+    },
 };

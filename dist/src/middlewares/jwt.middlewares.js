@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { ManagementError } from "../utils/managementError.utils.js";
 export const secret = process.env.JWT_SECRET || "MOTDEPASSEPARDEFAUT";
 const jwtOptions = {
     expiresIn: `28800000`, // 8h
@@ -12,25 +13,19 @@ const jwtVerify = (token) => {
         return userId;
     }
     catch (err) {
-        if (err instanceof Error) {
-            console.error("jwtVerify: error => ", err.message);
-            return null;
-        }
-        else {
-            throw err;
-        }
+        throw new ManagementError(500, "jwtVerify: error => ");
     }
 };
 export const jwtSign = (data) => jwt.sign({ data }, secret, jwtOptions);
 export const jwtMiddleware = (req, res, next) => {
     const token = req.headers.authorization;
     if (token === undefined) {
-        res.status(403).json({ message: "unauthorized" });
+        throw new ManagementError(403, "unauthorized");
     }
     else {
         const userId = jwtVerify(token || "");
         if (!userId) {
-            res.status(403).json({ message: "unauthorized" });
+            throw new ManagementError(403, "unauthorized");
         }
         else {
             req.body = Object.assign(Object.assign({}, req.body), { userId });
@@ -43,15 +38,14 @@ export const verifyToken = async (req, res, next) => {
         let token = req.headers.authorization;
         console.log(req.header("Authorization"));
         if (!token) {
-            res.status(403).send("Access Denied!!!!");
+            throw new ManagementError(403, "Access Denied!!!!");
         }
         if (token && token.startsWith("Bearer ")) {
             token = token.slice(7, token.length).trimStart();
         }
-        // console.log(token);
         const userId = jwtVerify(token || "");
         if (!userId) {
-            res.status(403).json({ message: "unauthorized" });
+            throw new ManagementError(403, "unauthorized");
         }
         else {
             req.body.userId = userId;
@@ -59,11 +53,6 @@ export const verifyToken = async (req, res, next) => {
         }
     }
     catch (err) {
-        if (err instanceof Error) {
-            res.status(500).json({ error: err.message });
-        }
-        else {
-            throw err;
-        }
+        throw new ManagementError(500, "jwtVerify: error => ");
     }
 };
