@@ -1,3 +1,4 @@
+import { ManagementError } from './../utils/managementError.utils.js';
 import { WeatherInfo } from '../models/weather.models.js';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
@@ -13,7 +14,7 @@ export const getWeatherData = async (city) => {
     }
     catch (error) {
         console.error(error);
-        return undefined;
+        throw new ManagementError(500, 'Les informations n ont pas été correctement récupérées');
     }
 };
 export const getWeatherAdvice = async (city) => {
@@ -31,7 +32,7 @@ export const getWeatherForecast = async (city) => {
     }
     catch (error) {
         console.error(error);
-        return undefined;
+        throw new ManagementError(500, 'Les informations n ont pas été correctement récupérées');
     }
 };
 // Récupérer le nom d'une ville par ses données géographique
@@ -48,8 +49,8 @@ export const getCoordinatesByCityName = async (city) => {
         return undefined;
     }
     catch (error) {
-        console.error('Error fetching coordinates by city name:', error);
-        return undefined;
+        console.error(error);
+        throw new ManagementError(500, 'Les informations n ont pas été correctement récupérées');
     }
 };
 // Récupérer la pollution atmosphérique d'une ville, liée à la fonction au dessus
@@ -62,7 +63,7 @@ export const getAirPollutionData = async (lat, lon) => {
         return airPollutionData;
     }
     catch (error) {
-        console.error('Error fetching air pollution data:', error);
-        return undefined;
+        console.error(error);
+        throw new ManagementError(500, 'Les informations n ont pas été correctement récupérées');
     }
 };

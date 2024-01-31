@@ -1,7 +1,6 @@
 import prometheus from 'prom-client';
 import { Request, Response} from 'express';
 
-
 const collectDefaultMetrics = prometheus.collectDefaultMetrics;
 
 const register = new prometheus.Registry();

@@ -1,28 +1,23 @@
 import bcrypt from "bcrypt";
+import { ManagementError } from "./managementError.utils.js";
 const SALT_ROUND = 10;
 export const hash = async (password) => {
-    let error = null;
-    let hashed = null;
     try {
-        hashed = await bcrypt.hash(password, SALT_ROUND);
+        const hashed = await bcrypt.hash(password, SALT_ROUND);
+        return { hashed, err: null };
     }
-    catch (e) {
-        if (e instanceof Error) {
-            error = `Error when hash: ${e.message}`;
-        }
+    catch (error) {
+        console.error("Error during hash:", error);
+        throw new ManagementError(500, "Error during password hashing");
     }
-    return { hashed, err: error };
 };
 export const compareHash = async (password, toCompare) => {
-    let error = null;
-    let match = false;
     try {
-        match = await bcrypt.compare(password, toCompare);
+        const match = await bcrypt.compare(password, toCompare);
+        return { match, err: null };
     }
-    catch (e) {
-        if (e instanceof Error) {
-            error = `Error when compare: ${e.message}`;
-        }
+    catch (error) {
+        console.error("Error during hash comparison:", error);
+        throw new ManagementError(500, "Error during password hash comparison");
     }
-    return { match, err: error };
 };

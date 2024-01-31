@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { ManagementError } from "./managementError.utils.js";
 
 const SALT_ROUND = 10;
 
@@ -7,38 +8,27 @@ interface HashResult {
   err: string | null;
 }
 
-export const hash = async (password: string): Promise<HashResult> => {
-  let error: string | null = null;
-  let hashed: string | null = null;
-
-  try {
-    hashed = await bcrypt.hash(password, SALT_ROUND);
-  } catch (e) {
-    if (e instanceof Error) {
-      error = `Error when hash: ${e.message}`;
-    }
-  }
-
-  return { hashed, err: error };
-};
-
 interface CompareHashResult {
   match: boolean;
   err: string | null;
 }
 
-export const compareHash = async (password: string, toCompare: string): Promise<CompareHashResult> => {
-  let error: string | null = null;
-  let match: boolean = false;
-
+export const hash = async (password: string): Promise<HashResult> => {
   try {
-    match = await bcrypt.compare(password, toCompare);
-  } catch (e) {
-    if (e instanceof Error) {
-      error = `Error when compare: ${e.message}`;
-    }
+    const hashed = await bcrypt.hash(password, SALT_ROUND);
+    return { hashed, err: null };
+  } catch (error) {
+    console.error("Error during hash:", error);
+    throw new ManagementError(500, "Error during password hashing");
   }
-
-  return { match, err: error };
 };
 
+export const compareHash = async (password: string, toCompare: string): Promise<CompareHashResult> => {
+  try {
+    const match = await bcrypt.compare(password, toCompare);
+    return { match, err: null };
+  } catch (error) {
+    console.error("Error during hash comparison:", error);
+    throw new ManagementError(500, "Error during password hash comparison");
+  }
+};
