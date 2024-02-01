@@ -17,7 +17,7 @@ services:
   database:
     image: mongo:latest
     ports:
-      - "27018:27017"
+      - "27017:27017"
     networks:
       - mynetwork
 
@@ -35,7 +35,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "4000:3000"
     networks:
       - mynetwork
     depends_on:
