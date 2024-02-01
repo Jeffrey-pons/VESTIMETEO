@@ -30,7 +30,6 @@ const swaggerDefinition = {
       description: 'Enter your bearer token in the format Bearer <token>'
     }
   },
-  // swagger : schemes 
 };
 
 const options = {

@@ -10,9 +10,6 @@ COPY package*.json ./
 # Installer les dépendances
 RUN npm install
 
-# Seedings
-# RUN npm run seed:db
-
 # Copier tous les fichiers source de l'application dans l'image
 COPY . .
 
