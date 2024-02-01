@@ -310,7 +310,6 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-
 // Ajout d'une ville au favoris
 /**
  * @swagger

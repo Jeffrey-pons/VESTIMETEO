@@ -17,18 +17,13 @@ import {
  *   description: Endpoints for weather information
  */
 
-
 // Variable de compteur, non déclaré, enlever du eslint
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let totalWeatherRequests = 0;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let totalWeatherForecastRequests = 0;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let totalWeatherAirPollutionRequests = 0;
-
-
-
 
 export const weatherController = {
   /**

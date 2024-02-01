@@ -9,6 +9,6 @@
     "skipLibCheck": false,
     
   },
-  "include": ["*.ts", "migrate-mongo-config.js"],
+  "include": ["*.ts", "migrate-mongo-config.js", "seedManual.js"],
   "exclude": ["node_modules"]
 }

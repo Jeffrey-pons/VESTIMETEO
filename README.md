@@ -27,4 +27,4 @@ Assurez-vous d'avoir Node.js et npm d'installés.
 Pour accéder à la documentation Swagger de l'API, rendez-vous sur http://localhost:3000/api-docs après avoir démarré l'application.
 
 ## Grafana - Prometheus
-Pour accéder au metrics de Grafana, rendez-vous sur http://localhost:8000/metrics ou directement sur le port de Grafana pour visualiser les dashboards de Vesti Météo : http://localhost:3000/.
+Pour accéder au metrics de Grafana, rendez-vous sur http://localhost:8080/metrics ou directement sur le port de Grafana pour visualiser les dashboards de Vesti Météo : http://localhost:3000/.
