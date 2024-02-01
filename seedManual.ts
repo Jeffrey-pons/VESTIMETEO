@@ -13,7 +13,7 @@ if (!mongoUrl) {
 await mongoose.connect(mongoUrl, { dbName: "VestiMeteo" });
 
 const users = [
-  { name: 'Noa', lastname: 'Doe', email: 'noadoe@gmail.com', password: 'hashedP!!assword123' },
+  { name: 'Jeremy', lastname: 'Doe', email: 'jeremydoe@gmail.com', password: 'hashedP!!assword123' },
 ];
 
 try {

@@ -15,6 +15,11 @@ Assurez-vous d'avoir Node.js et npm d'installés.
 - Compiler TypeScript : `npx tsc`
 - Démarrez le linter (ESLint) : `npm run lint`
 - Démarrez le Dockercompose : `docker-compose up -d`
+- Désactivez le Docker : `docker-compose down`
+- Lancer les migrations : `npx migrate-mongo up`
+- Lancer le seed : `npm run seed`
+- Désactivez les migrations : `npx migrate-mongo down`
+- Status des migrations : `migrate-mongo status`
 - Démarrez l'application : `npm run dev`
 - Visitez http://localhost:8000 dans votre navigateur.
 
